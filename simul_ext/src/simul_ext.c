@@ -115,6 +115,7 @@ int main() {
 
 			GrabarSuperBloque(&ext_superblock, fent);
 			Grabarinodosydirectorio(&directorio, &ext_blq_inodos, fent);
+			GrabarByteMaps(&ext_bytemaps, fent);
 			continue;
 		}
 		if (strcmp(orden, "remove") == 0) {
@@ -127,6 +128,7 @@ int main() {
 					argumento1, fent);
 			GrabarSuperBloque(&ext_superblock, fent);
 			Grabarinodosydirectorio(&directorio, &ext_blq_inodos, fent);
+			GrabarByteMaps(&ext_bytemaps, fent);
 			continue;
 		}
 		if (strcmp(orden, "info") == 0) {
@@ -159,19 +161,15 @@ int main() {
 		}
 
 		// Escritura de metadatos en comandos rename, remove, copy
-		/*if (grabardatos)
-		 fent = fopen("particion.bin", "r+b");
+		if (grabardatos)
 		 GrabarDatos(&memdatos, fent);
 		 fclose(fent);
-		 grabardatos = 0;*/
+		 grabardatos = 0;
 
-		//Grabarinodosydirectorio(&directorio, &ext_blq_inodos, fent);
-		//GrabarByteMaps(&ext_bytemaps, fent);
-		//GrabarSuperBloque(&ext_superblock, fent);
 		//Si el comando es salir se habrán escrito todos los metadatos
 		//faltan los datos y cerrar
 		if (strcmp(orden, "salir") == 0) {
-			//GrabarDatos(&memdatos, fent);
+			GrabarDatos(&memdatos, fent);
 			fclose(fent);
 			return 0;
 		}
@@ -402,7 +400,8 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos,
 //Funciones para grabar en disc: Bytemaps, inodos, directorio,superbloque y datos de ficheros
 
 void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich) {
-
+	fseek(fich, SIZE_BLOQUE, SEEK_SET);
+	fwrite(ext_bytemaps, 1, sizeof(EXT_SIMPLE_SUPERBLOCK), fich);
 }
 
 void Grabarinodosydirectorio(EXT_ENTRADA_DIR *directorio,
