@@ -62,6 +62,11 @@ int main() {
 	// Lectura del fichero completo de una sola vez
 
 	fent = fopen("particion.bin", "r+b");
+	if (fent == NULL) {
+		perror("Error al abrir particion.bin");
+		exit(-1);
+	}
+
 	fread(&datosfich, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fent);
 
 	memcpy(&ext_superblock, (EXT_SIMPLE_SUPERBLOCK*) &datosfich[0],
@@ -71,7 +76,6 @@ int main() {
 	memcpy(&ext_blq_inodos, (EXT_BLQ_INODOS*) &datosfich[2], SIZE_BLOQUE);
 	memcpy(&memdatos, (EXT_DATOS*) &datosfich[4],
 	MAX_BLOQUES_DATOS * SIZE_BLOQUE);
-
 
 	//Panel de control de la terminal
 
@@ -210,7 +214,6 @@ int ComprobarComando(char *comando) {
 	return num;
 }
 
-
 //Impresion de los bytemaps
 
 void Printbytemaps(EXT_BYTE_MAPS *ext_bytemaps) {
@@ -238,10 +241,9 @@ void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup) {
 	printf("Primer bloque de datos = %d\n", psup->s_first_data_block);
 }
 
-
 //Buscamos si el fichero existe devolviendo 1 si existo y 0 lo contrario
 
-int BuscaFich(EXT_ENTRADA_DIR * directorio, EXT_BLQ_INODOS *inodos, char *nombre) {
+int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre) {
 	int num = 0;
 	for (int i = 1; i < 20; i++) {
 		if (directorio[i].dir_inodo != 0xffff) {
